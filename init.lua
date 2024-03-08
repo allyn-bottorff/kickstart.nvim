@@ -155,6 +155,45 @@ vim.o.cc = "80"
 vim.api.nvim_create_autocmd("TermOpen", { command = "setlocal nonumber" })
 vim.api.nvim_create_autocmd("TermOpen", { command = "setlocal signcolumn=no" })
 
+--tabstop
+
+vim.o.expandtab = true
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
+local function settabspace4()
+	vim.o.tabstop = 4
+	vim.o.softtabstop = 4
+	vim.o.shiftwidth = 4
+end
+
+local function settabspace2()
+	vim.o.tabstop = 2
+	vim.o.softtabstop = 2
+	vim.o.shiftwidth = 2
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "python", "go", "zig", "terraform" },
+	callback = settabspace4,
+})
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "python", "yaml", "zig", "terraform" },
+	command = "setlocal expandtab",
+})
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "yaml", "terraform", "lua" },
+	callback = settabspace2,
+})
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "asciidoc", "norg" },
+	command = "setlocal spell",
+})
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "asciidoc" },
+	command = "setlocal tw=79",
+})
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -230,7 +269,6 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
 	-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-	"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
 
 	-- NOTE: Plugins can also be added by using a table,
 	-- with the first argument being the link and the following
@@ -387,7 +425,7 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>/", function()
 				-- You can pass additional configuration to telescope to change theme, layout, etc.
 				builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-					winblend = 10,
+					winblend = 20,
 					previewer = false,
 				}))
 			end, { desc = "[/] Fuzzily search in current buffer" })
